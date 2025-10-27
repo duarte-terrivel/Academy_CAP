@@ -1,0 +1,62 @@
+###
+# Base URL for the service (assuming default port 4004)
+@baseUrl = http://localhost:4004/odata/v4/catalog
+
+###
+# Get all Tasks
+GET {{baseUrl}}/Task
+
+###
+# Get a specific Task (replace with a valid Task ID after creating one)
+# @name getOneTask
+GET {{baseUrl}}/Task(a2b5b377-4d1c-4a0b-829d-0b2e3f7e9a6c)
+
+###
+# Create a new Task
+# @name createTask
+POST {{baseUrl}}/Task
+Content-Type: application/json
+
+{
+    "title": "My new important task",
+    "description": "This is a description for my new task.",
+    "priority": "High",
+    "status": "New",
+    "limit_date": "2024-12-31"
+}
+
+###
+# Get all Users
+GET {{baseUrl}}/User
+
+###
+# Get a specific User (replace with a valid User ID after creating one)
+# @name getOneUser
+GET {{baseUrl}}/User(f1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6)
+
+###
+# Create a new User
+# @name createUser
+POST {{baseUrl}}/User
+Content-Type: application/json
+
+{
+    "username": "duarte",
+    "email": "duarte.terrivel@example.com"
+}
+
+###
+# Associate a Task with a User
+# This uses the ID from the created task (@createTask) and
+# associates it with a user (replace with a valid User ID).
+PUT {{baseUrl}}/User(f1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6)
+Content-Type: application/json
+
+{
+    "task_ID": "{{createTask.response.body.ID}}"
+}
+
+###
+# Get a user and expand to see their associated task
+# (replace with a valid User ID)
+GET {{baseUrl}}/User(f1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6)?$expand=task
