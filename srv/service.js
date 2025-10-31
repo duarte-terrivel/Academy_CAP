@@ -1,3 +1,5 @@
+const { User } = require("@sap/cds");
+
 module.exports = cds.service.impl(async function () {
   const { Task } = this.entities;
 
@@ -23,6 +25,27 @@ module.exports = cds.service.impl(async function () {
       // If not already done, register conclusion date
       if (existing && existing.status !== 'Done') {
         req.data.conclusion_date = new Date();
+      }
+    }
+  });
+this.after('READ', Task, (data) => {
+    const now = new Date();
+    const records = Array.isArray(data) ? data : [data];
+
+    for (let each of records) {
+      if (each.limit_date) {
+        const limit = new Date(each.limit_date);
+        const diffDays = Math.ceil((limit - now) / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 5) {
+          each.statusColor = 3; // Green (Good)
+        } else if (diffDays >= 0 && diffDays <= 5) {
+          each.statusColor = 2; // Yellow (Critical)
+        } else {
+          each.statusColor = 1; // Red (Error)
+        }
+      } else {
+        each.statusColor = 0; // None
       }
     }
   });
